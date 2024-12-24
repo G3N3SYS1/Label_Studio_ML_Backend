@@ -15,6 +15,8 @@ RUN --mount=type=cache,target="/var/cache/apt",sharing=locked \
     libxmu-dev libxi-dev libglu1-mesa libglu1-mesa-dev libfreeimage-dev \
     && apt-get -y install ffmpeg libsm6 libxext6 libffi-dev python3-dev python3-pip gcc
 
+RUN apt-get update && apt-get install -y bash
+
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_CACHE_DIR=/.cache \
@@ -57,6 +59,10 @@ RUN /bin/sh -c 'if [ ! -f /app/models/yolov8m.pt ]; then \
     && yolo predict model=/app/models/yolov8n-seg.pt source=/app/tests/car.jpg; \
     fi'
 
+COPY start.sh /app/start.sh
+
+RUN chmod +x start.sh
+
 ENV PYTHONPATH=/app
 
-CMD ["/app/start.sh"]
+CMD ["bash", "/app/start.sh"]

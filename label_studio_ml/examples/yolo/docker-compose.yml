@@ -1,4 +1,4 @@
-version: "3.8"
+# version: "3.8"
 
 services:
   yolo:
@@ -28,8 +28,10 @@ services:
       # Do not use 'localhost' as it does not work within Docker containers.
       # Use prefix 'http://' or 'https://' for the URL always.
       # Determine the actual IP using 'ifconfig' (Linux/Mac) or 'ipconfig' (Windows).
-      - LABEL_STUDIO_URL=
-      - LABEL_STUDIO_API_KEY=
+#      - LABEL_STUDIO_URL=http://192.168.1.139:9001/
+#      - LABEL_STUDIO_API_KEY=9510d8ef08eb41d48ccbe3014d98987a1a6ac949
+      - LABEL_STUDIO_URL=http://192.168.1.57:8080/
+      - LABEL_STUDIO_API_KEY=8442e0ecc53f5c430167700e5b168cac7b903465
 
       # YOLO parameters
 
@@ -46,5 +48,9 @@ services:
       - "9090:9090"
     volumes:
       - "./data/server:/data"
-      - "./models:/app/models"
+      - "./models/segment_748_epoch_100.pt:/app/models/segment_748_epoch_100.pt"
       - "./cache_dir:/app/cache_dir"
+      - model_volume:/app/models
+
+volumes:
+  model_volume:
