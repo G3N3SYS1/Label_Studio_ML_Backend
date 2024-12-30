@@ -30,7 +30,7 @@ services:
       # Determine the actual IP using 'ifconfig' (Linux/Mac) or 'ipconfig' (Windows).
 #      - LABEL_STUDIO_URL=http://192.168.1.139:9001/
 #      - LABEL_STUDIO_API_KEY=9510d8ef08eb41d48ccbe3014d98987a1a6ac949
-      - LABEL_STUDIO_URL=http://192.168.1.57:8080/
+      - LABEL_STUDIO_URL=http://192.168.1.56:8080/
       - LABEL_STUDIO_API_KEY=8442e0ecc53f5c430167700e5b168cac7b903465
 
       # YOLO parameters

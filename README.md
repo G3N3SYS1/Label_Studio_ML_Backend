@@ -1,227 +1,114 @@
-# What is the Label Studio ML backend?
+# Under Vehicle Auto Annotator for 5 Landmark Features (UVAA)
 
-The Label Studio ML backend is an SDK that lets you wrap your machine learning code and turn it into a web server.
-The web server can be connected to a running [Label Studio](https://labelstud.io/) instance to automate labeling tasks.
+UVAA is a repository responsible for the creation and deployment of containers containing self-trained model with the aim of doing auto annotation with respect to the trained classes inside Label Studio. 
 
-If you just need to load static pre-annotated data into Label Studio, running an ML backend might be overkill for you.
-Instead, you can [import pre-annotated data](https://labelstud.io/guide/predictions.html).
+## How it works?
+1. The User must have at least 1 model.pt file before running this repository.
+2. The model will be loaded inside the docker container which will be built and deployed in the port allocated, as specified in the docker-compose.yml
+3. The model can then be used in Label Studio for auto annotation tasks. The User must ensure that the labeling settings and model settings have been configured accordingly in Label Studio.
 
-# Quickstart
+*Note: This repository DOES NOT HAVE MODEL TRAINING CAPABILITIES. It is purely for DEPLOYMENT OF TRAINED MODELS INTO LABEL STUDIO.*
 
-To start using the models, use [docker-compose](https://docs.docker.com/compose/install/) to run the ML backend
-server.
+*For Model Training and Development, refer to UVSM repository.*
 
-Use the following command to start serving the ML backend at `http://localhost:9090`:
-
-```bash
-git clone https://github.com/HumanSignal/label-studio-ml-backend.git
-cd label-studio-ml-backend/label_studio_ml/examples/{MODEL_NAME}
-docker-compose up
-```
-
-Replace `{MODEL_NAME}` with the name of the model you want to use (see below). 
-
-**Allow the ML backend to access Label Studio data**
-
-In most cases, you will need to set `LABEL_STUDIO_URL` and `LABEL_STUDIO_API_KEY` environment variables to allow the ML backend access to the media data in Label Studio.
-[Read more in the documentation](https://labelstud.io/guide/ml#Allow-the-ML-backend-to-access-Label-Studio-data).
-
-# Models
-
-The following models are supported in the repository. Some of them work without any additional setup, and some of them
-require additional parameters to be set.
-
-Check the **Required parameters** column to see if you need to set any additional parameters.
-
-- **Pre-annotation** column indicates if the model can be used for pre-annotation in Label Studio:  
-  you can see pre-annotated data when opening the labeling page or after running predictions for a batch of data.
-- **Interactive mode** column indicates if the model can be used for interactive labeling in Label Studio: see
-  interactive predictions when performing actions on labeling page.
-- **Training** column indicates if the model can be used for training in Label Studio: update the model state based the
-  submitted annotations.
-
-| MODEL_NAME                                                                                 | Description                                                                                                                                          | Pre-annotation | Interactive mode | Training |  Required parameters  | Arbitrary or Set Labels?                                                   | 
-|--------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|----------------|------------------|----------|----------------------|----------------------------------------------------------------------------|
-| [bert_classifier](/label_studio_ml/examples/bert_classifier)                               | Text classification with [Huggingface](https://huggingface.co/transformers/v3.0.2/model_doc/auto.html#automodelforsequenceclassification)            | ✅              | ❌                | ✅        | None                       | Arbitrary|
-| [easyocr](/label_studio_ml/examples/easyocr)                                               | Automated OCR. [EasyOCR](https://github.com/JaidedAI/EasyOCR)                                                                                        | ✅              | ❌                | ❌        | None                       | Set (characters)                                                           | 
-| [flair](/label_studio_ml/examples/flair)                                                   | NER by [flair](https://flairnlp.github.io/)                                                                                                          | ✅              | ❌                | ❌        | None                       | Arbitrary|
-| [gliner](/label_studio_ml/examples/gliner)                                                 | NER by [GLiNER](https://huggingface.co/spaces/tomaarsen/gliner_medium-v2.1)                                                                          | ❌              |  ✅  |  ✅  | None | Arbitrary|
-| [grounding_dino](/label_studio_ml/examples/grounding_dino)                                 | Object detection with prompts. [Details](https://github.com/IDEA-Research/GroundingDINO)                                                             | ❌              | ✅                | ❌        | None                       | Arbitrary                                                                  |
-| [grounding_sam](/label_studio_ml/examples/grounding_sam) | Object Detection with [Prompts](https://github.com/IDEA-Research/GroundingDINO) and [SAM 2](https://github.com/facebookresearch/segment-anything-2) |    ❌              | ✅                | ❌        | None                       | Arbitrary                                                                  |
-| [huggingface_llm](/label_studio_ml/examples/huggingface_llm)                               | LLM inference with [Hugging Face](https://huggingface.co/tasks/text-generation)                                                                      | ✅              | ❌                | ❌        | None                       | Arbitrary | 
-| [huggingface_ner](/label_studio_ml/examples/huggingface_ner)                               | NER by [Hugging Face](https://huggingface.co/docs/transformers/en/tasks/token_classification)                                                        | ✅              | ❌                | ✅        | None                       | Arbitrary | 
-| [interactive_substring_matching](/label_studio_ml/examples/interactive_substring_matching) | Simple keywords search                                                                                                                               | ❌              | ✅                | ❌        | None                       | Arbitrary | 
-| [langchain_search_agent](/label_studio_ml/examples/langchain_search_agent)                 | RAG pipeline with Google Search and [Langchain](https://langchain.com/)                                                                              | ✅              | ✅                | ✅        | OPENAI_API_KEY, GOOGLE_CSE_ID, GOOGLE_API_KEY | Arbitrary | 
-| [llm_interactive](/label_studio_ml/examples/llm_interactive)                               | Prompt engineering with [OpenAI](https://platform.openai.com/), Azure LLMs.                                                                          | ✅              | ✅                | ✅        | OPENAI_API_KEY             | Arbitrary                                                                  | 
-| [mmdetection](/label_studio_ml/examples/mmdetection-3)                                     | Object Detection with [OpenMMLab](https://github.com/open-mmlab/mmdetection)                                                                         | ✅              | ❌                | ❌        | None                       | Arbitrary | 
-| [nemo_asr](/label_studio_ml/examples/nemo_asr)                                             | Speech ASR by [NVIDIA NeMo](https://github.com/NVIDIA/NeMo)                                                                                          | ✅              | ❌                | ❌        | None                       | Set (vocabulary and characters) | 
-| [segment_anything_2_image](/label_studio_ml/examples/segment_anything_2_image)             | Image segmentation with [SAM 2](https://github.com/facebookresearch/segment-anything-2)                                                              | ❌              | ✅ | ❌ | None| Arbitrary|
-| [segment_anything_model](/label_studio_ml/examples/segment_anything_model)                 | Image segmentation by [Meta](https://segment-anything.com/)                                                                                          | ❌              | ✅                |   ❌       | None                       | Arbitrary                                                                  |
-| [sklearn_text_classifier](/label_studio_ml/examples/sklearn_text_classifier)               | Text classification with [scikit-learn](https://scikit-learn.org/stable/)                                                                            | ✅              | ❌                | ✅        | None                        | Arbitrary | 
-| [spacy](/label_studio_ml/examples/spacy)                                                   | NER by [SpaCy](https://spacy.io/)                                                                                                                    | ✅              | ❌                | ❌        | None                       | Set      [(see documentation)](https://spacy.io/usage/linguistic-features) |
-| [tesseract](/label_studio_ml/examples/tesseract)                                           | Interactive OCR. [Details](https://github.com/tesseract-ocr/tesseract)                                                                               | ❌              | ✅                | ❌        | None                       | Set (characters)                                                           | 
-| [watsonX](/label_studio_ml/exampels/watsonx)| LLM inference with [WatsonX](https://www.ibm.com/products/watsonx-ai) and integration with [WatsonX.data](watsonx.data)| ✅ | ✅| ❌ | None| Arbitrary|
-| [yolo](/label_studio_ml/examples/yolo)                                                     | All YOLO tasks are supported: [YOLO](https://docs.ultralytics.com/tasks/) | ✅ | ❌ | ❌ | None | Arbitrary |
-
-# (Advanced usage) Develop your model
-
-To start developing your own ML backend, follow the instructions below.
+## Pre-requisite
+- Self-trained .pt model from UVSM repository
 
 ## 1. Installation
 
-Download and install `label-studio-ml` from the repository:
+Download and install all essential dependencies:
 
 ```bash
-git clone https://github.com/HumanSignal/label-studio-ml-backend.git
-cd label-studio-ml-backend/
-pip install -e .
+pip install -r requirements.txt
 ```
-
-## 2. Create empty ML backend:
-
-```bash
-label-studio-ml create my_ml_backend
+Copy self-trained model from UVSM repository into models folder:
 ```
-
-You can go to the `my_ml_backend` directory and modify the code to implement your own inference logic.
-
-The directory structure should look like this:
-
+label_studio_ml/
+├── examples/
+	├── yolo/
+     		├── models
+          		├── best.pt
 ```
-my_ml_backend/
-├── Dockerfile
+Download the Docker Desktop.exe which can be found here: https://www.docker.com/products/docker-desktop/
+## 2. Configuration
+
+*Note: You should change the configuration of the `docker-compose.yml` accordingly:*
+```
+yolo/
 ├── docker-compose.yml
-├── model.py
-├── _wsgi.py
-├── README.md
-└── requirements.txt
 ```
+![Docker Example](images/ML_BACKEND.png "Sample Config of docker-compose.yml")
+```
+- Replace LABEL_STUDIO_URL with your Label Studio URL
+```
+*Note: Use `ipconfig` in command prompt to check your assigned IP address.*
 
-`Dockefile` and `docker-compose.yml` are used to run the ML backend with Docker.
+![Docker Example](images/ipconfig.png "ipconfig details in command prompt.")
+```
+- Replace YOUR_LABEL_STUDIO_API_KEY with your own
+- Replace your_model.pt with your self-trained model.pt file name as copied from UVSM
+```
+*Note: Label Studio API Key can be found in Label Studio under `Account & Settings` --> `Access Token`*
+![Docker Example](images/API Token.png "Sample API Token.")
+
+`Dockerfile` and `docker-compose.yml` are used to run the ML backend with Docker.
 `model.py` is the main file where you can implement your own training and inference logic.
 `_wsgi.py` is a helper file that is used to run the ML backend with Docker (you don't need to modify it).
 `README.md` is a readme file with instructions on how to run the ML backend.
 `requirements.txt` is a file with Python dependencies.
+## 3. Deployment
+*Note: Ensure Docker Desktop.exe is opened and running in the background.*
 
-## 3. Implement prediction logic
-
-In your model directory, locate the `model.py` file (for example, `my_ml_backend/model.py`).
-
-The `model.py` file contains a class declaration inherited from `LabelStudioMLBase`. This class provides wrappers for
-the API methods that are used by Label Studio to communicate with the ML backend. You can override the methods to
-implement your own logic:
-
-```python
-def predict(self, tasks, context, **kwargs):
-    """Make predictions for the tasks."""
-    return predictions
-```
-
-The `predict` method is used to make predictions for the tasks. It uses the following:
-
-- `tasks`: [Label Studio tasks in JSON format](https://labelstud.io/guide/task_format.html)
-- `context`: [Label Studio context in JSON format](https://labelstud.io/guide/ml_create#Support-interactive-pre-annotations-in-your-ML-backend) - for
-  interactive labeling scenario
-- `predictions`: [Predictions array in JSON format](https://labelstud.io/guide/export.html#Raw-JSON-format-of-completed-tasks)
-
-Once you implement the `predict` method, you can see predictions from the connected ML backend in Label Studio.
-
-## 4. Implement training logic (optional)
-
-You can also implement the `fit` method to train your model. The `fit` method is typically used to train the model on
-the labeled data, although it can be used for any arbitrary operations that require data persistence (for example,
-storing labeled data in a database, saving model weights, keeping LLM prompts history, etc).
-
-By default, the `fit` method is called at any data action in Label Studio, like creating a new task or updating
-annotations. You can modify this behavior from the project settings under **Webhooks**.
-
-To implement the `fit` method, you need to override the `fit` method in your `model.py` file:
-
-```python
-def fit(self, event, data, **kwargs):
-    """Train the model on the labeled data."""
-    old_model = self.get('old_model')
-    # write your logic to update the model
-    self.set('new_model', new_model)
-```
-
-with
-
-- `event`: event type can be `'ANNOTATION_CREATED'`, `'ANNOTATION_UPDATED'`, etc.
-- `data` the payload received from the event (check more
-  on [Webhook event reference](https://labelstud.io/guide/webhook_reference.html))
-
-Additionally, there are two helper methods that you can use to store and retrieve data from the ML backend:
-
-- `self.set(key, value)` - store data in the ML backend
-- `self.get(key)` - retrieve data from the ML backend
-
-Both methods can be used elsewhere in the ML backend code, for example, in the `predict` method to get the new model
-weights.
-
-### Other methods and parameters
-
-Other methods and parameters are available within the `LabelStudioMLBase` class:
-
-- `self.label_config` - returns the [Label Studio labeling config](https://labelstud.io/guide/setup.html) as XML string.
-- `self.parsed_label_config` - returns the [Label Studio labeling config](https://labelstud.io/guide/setup.html) as
-  JSON.
-- `self.model_version` - returns the current model version.
-- `self.get_local_path(url, task_id)` - this helper function is used to download and cache an url that is typically stored in `task['data']`, 
-and to return the local path to it. The URL can be: LS uploaded file, LS Local Storage, LS Cloud Storage or any other http(s) URL.      
-
-### Run without Docker
-
-To run without Docker (for example, for debugging purposes), you can use the following command:
+Proceed to YOLO Directory:
 
 ```bash
-label-studio-ml start my_ml_backend
+cd label_studio_ml/examples/yolo
 ```
 
-### Test your ML backend
-
-Modify the `my_ml_backend/test_api.py` to ensure that your ML backend works as expected.
-
-### Modify the port
-
-To modify the port, use the `-p` parameter:
+Create Docker Container for Model Deployment:
 
 ```bash
-label-studio-ml start my_ml_backend -p 9091
+docker-compose build
 ```
 
-# Deploy your ML backend to GCP
-
-Before you start:
-
-1. Install [gcloud](https://cloud.google.com/sdk/docs/install).
-2. Initialize billing for your account if it's not [activated](https://console.cloud.google.com/project/_/billing/enable).
-3. Initialize gcloud, enter the following commands and login with your browser:
+Run and Deploy Docker Container:
 
 ```bash
-gcloud auth login
+docker-compose up
 ```
-
-4. Activate your Cloud Build API.
-5. Find your GCP project ID.
-6. (Optional) Add `GCP_REGION` with your default region to your ENV variables.
-
-To start deployment:
-
-1. Create your own ML backend
-2. Start deployment to GCP:
-
+Launch Label Studio:
 ```bash
-label-studio-ml deploy gcp {ml-backend-local-dir} \
---from={model-python-script} \
---gcp-project-id {gcp-project-id} \
---label-studio-host {https://app.heartex.com} \
---label-studio-api-key {YOUR-LABEL-STUDIO-API-KEY}
+label-studio start
 ```
 
-3. After Label Studio deploys the model, you can find the model endpoint in the console.
 
+## 4. Model Implementation
 
+- In your label studio project, go to `Settings`--> `Model` --> `Connect Model`
+- Proceed to fill in the details and the URL of the Container
+- Turn on `Interactive preannotations`, then click `Validate and Save`
+
+*Note: By default, the port of Container is 9090, as stated in docker-compose.yml*
+
+![Docker Example](images/Model Settings.png "Sample setting for label studio model.")
+
+- Navigate to `Labeling Interface` --> `Code` then use the following:
+```
+<View>
+  <Image name="image" value="$image"/>
+  <PolygonLabels name="label" toName="image" model_score_threshold="0.5" model_path="your_model.pt" opacity="0.1">
+    <Label value="wheel" background="#FFA39E"/>
+    <Label value="spare tyre" background="#D4380D"/>
+    <Label value="fuel tank" background="#FFC069"/>
+    <Label value="catalytic convertor" background="#AD8B00"/>
+  <Label value="silencer" background="#00FFFF"/></PolygonLabels>
+</View>
+```
+*Note: Replace your_model.pt with your actual model name. You may also change the model_score_threshold accordingly.*
+
+- Click `Save` to save the changes.
+
+*After the above has been done, head into your project and click on any of the images, it will be automatically annotated.*
 # Troubleshooting
 
 ## Troubleshooting Docker Build on Windows
