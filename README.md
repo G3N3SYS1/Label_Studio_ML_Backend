@@ -1,6 +1,6 @@
-# Under Vehicle Auto Annotator for 5 Landmark Features (UVAA)
+# Label Studio ML Backend & Docker Container Builder 
 
-UVAA is a repository responsible for the creation and deployment of containers containing self-trained model with the aim of doing auto annotation with respect to the trained classes inside Label Studio. 
+This is a repository responsible for the creation and deployment of containers containing self-trained model with the aim of doing auto annotation with respect to the trained classes inside Label Studio. 
 
 ## How it works?
 1. The User must have at least 1 model.pt file before running this repository.
@@ -9,10 +9,10 @@ UVAA is a repository responsible for the creation and deployment of containers c
 
 *Note: This repository DOES NOT HAVE MODEL TRAINING CAPABILITIES. It is purely for DEPLOYMENT OF TRAINED MODELS INTO LABEL STUDIO.*
 
-*For Model Training and Development, refer to UVSM repository.*
+*For Model Training and Development, refer to Model_Training repository.*
 
 ## Pre-requisite
-- Self-trained .pt model from UVSM repository
+- Self-trained .pt model
 
 ## 1. Installation
 
@@ -21,13 +21,12 @@ Download and install all essential dependencies:
 ```bash
 pip install -r requirements.txt
 ```
-Copy self-trained model from UVSM repository into models folder:
+Copy self-trained model into models folder:
 ```
 label_studio_ml/
-├── examples/
-	├── yolo/
-     		├── models
-          		├── best.pt
+├── yolo/
+     	├── models
+          	├── best.pt
 ```
 Download the Docker Desktop.exe which can be found here: https://www.docker.com/products/docker-desktop/
 ## 2. Configuration
@@ -43,12 +42,13 @@ yolo/
 ```
 *Note: Use `ipconfig` in command prompt to check your assigned IP address.*
 
-![Docker Example](images/ipconfig.png "ipconfig details in command prompt.")
+
 ```
 - Replace YOUR_LABEL_STUDIO_API_KEY with your own
 - Replace your_model.pt with your self-trained model.pt file name as copied from UVSM
 ```
 *Note: Label Studio API Key can be found in Label Studio under `Account & Settings` --> `Access Token`*
+
 ![Docker Example](images/API Token.png "Sample API Token.")
 
 `Dockerfile` and `docker-compose.yml` are used to run the ML backend with Docker.
@@ -62,7 +62,7 @@ yolo/
 Proceed to YOLO Directory:
 
 ```bash
-cd label_studio_ml/examples/yolo
+cd yolo
 ```
 
 Create Docker Container for Model Deployment:
@@ -97,14 +97,14 @@ label-studio start
 <View>
   <Image name="image" value="$image"/>
   <PolygonLabels name="label" toName="image" model_score_threshold="0.5" model_path="your_model.pt" opacity="0.1">
-    <Label value="wheel" background="#FFA39E"/>
-    <Label value="spare tyre" background="#D4380D"/>
-    <Label value="fuel tank" background="#FFC069"/>
-    <Label value="catalytic convertor" background="#AD8B00"/>
-  <Label value="silencer" background="#00FFFF"/></PolygonLabels>
+    <Label value="class_1" background="#FFA39E"/>
+    <Label value="class_2" background="#D4380D"/>
+    <Label value="class_3" background="#FFC069"/>
+    <Label value="class_4" background="#AD8B00"/>
+  <Label value="class_5" background="#00FFFF"/></PolygonLabels>
 </View>
 ```
-*Note: Replace your_model.pt with your actual model name. You may also change the model_score_threshold accordingly.*
+*Note: Replace your_model.pt with your actual model name, class_# with your actual class names. You may also change the model_score_threshold accordingly.*
 
 - Click `Save` to save the changes.
 
